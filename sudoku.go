@@ -1,29 +1,33 @@
 package main
 
 import (
-	"fmt"
-	"time"
+	"log"
+	"net/http"
+
+	"github.com/gorilla/mux"
 
 	"./SudokuChecker"
+	"./SudokuResponse"
 	"./SudokuSolver"
-	"./Tests"
 )
 
 func main() {
-	Tests.RunTests()
+	router := mux.NewRouter().StrictSlash(true)
 
-	veryHardPuzzle := "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4.."
-	start := time.Now()
+	router.Path("/solve").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		puzzle := r.URL.Query().Get("puzzle")
+		solvedPuzzle := SudokuSolver.Solve(puzzle, false)
+		solved := SudokuChecker.Check(solvedPuzzle)
 
-	solvedPuzzle := SudokuSolver.Solve(veryHardPuzzle, false)
+		SudokuResponse.SendResponse(w, solvedPuzzle, solved)
+	})
 
-	end := time.Now()
-	fmt.Println(end.Sub(start))
+	router.HandleFunc("/check", func(w http.ResponseWriter, r *http.Request) {
+		puzzle := r.URL.Query().Get("puzzle")
+		solved := SudokuChecker.Check(puzzle)
 
-	solved := SudokuChecker.Check(solvedPuzzle)
-	if solved {
-		fmt.Println("!! Solved !!")
-	} else {
-		fmt.Println("XX Wrong Answer XX")
-	}
+		SudokuResponse.SendResponse(w, puzzle, solved)
+	})
+
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
