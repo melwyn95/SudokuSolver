@@ -1,28 +1,45 @@
 import React, { useState, useCallback } from 'react';
 import Cell from './Cell';
 
+import { solve } from './api/solve';
+import { check } from './api/check';
+import { convertBoardToString, convertStringToBoard, validateCheck, validateSolve } from './utils';
+
 const getInitialBoard = () => Array(9).fill(Array(9).fill(0))
+
+//() => convertStringToBoard('53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79')
 
 const Board = () => {
   const [board, setBoard] = useState(getInitialBoard);
+  const [error, setError] = useState('');
   const onChangeFactory = useCallback((rowIndex: number, colIndex: number) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       e.preventDefault();
       const { target: { value } } = e;
       let nValue = Number(value) % 10
       nValue = nValue === 0 ? Number(value) / 10 : nValue;
-      setBoard(board.map((row: number[], index: number) => {
-        if (index !== rowIndex) {
-          return row;
-        }
-        return row.map((cell: number, cellIndex: number) => {
-          if (cellIndex !== colIndex) {
-            return cell
+      setBoard((_board: number[][]) =>
+        _board.map((row: number[], index: number) => {
+          if (index !== rowIndex) {
+            return row;
           }
-          return nValue;
-        })
-      }));
+          return row.map((cell: number, cellIndex: number) => {
+            if (cellIndex !== colIndex) {
+              return cell
+            }
+            return nValue;
+          })
+        }));
     }, [board]);
+
+  const solveClicked = () => validateSolve(board) ?
+    solve(convertBoardToString(board), setError, setBoard) :
+    setError('Invalid Sudoku');
+
+  const checkClicked = () => validateCheck(board) ?
+    check(convertBoardToString(board), setError) :
+    setError('Invalid Sudoku');
+
   return <>
     <div className="sudokuContainer">
       {board.map((row: number[], rowIndex: number) => {
@@ -36,8 +53,11 @@ const Board = () => {
       })}
     </div>
     <div className="actionPanel">
-      <button className="actionButton">Solve</button>
-      <button className="actionButton">Check</button>
+      <button className="actionButton" onClick={solveClicked}>Solve</button>
+      <button className="actionButton" onClick={checkClicked}>Check</button>
+    </div>
+    <div className="errorMessage">
+      {error}
     </div>
   </>
 }

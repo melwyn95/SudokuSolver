@@ -13,7 +13,8 @@ const Cell = (props: CellProps) => {
     type="number"
     value={Number(value).toString()}
     onChange={onChange}
-    maxLength={1} />)
+    maxLength={1}
+  />)
 }
 
 const isSame = (prevProps: CellProps, nextProps: CellProps): boolean => {
