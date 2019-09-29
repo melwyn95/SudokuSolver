@@ -2,6 +2,7 @@
   text-align: center;
   
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center
 }
@@ -31,4 +32,16 @@ input[type=number]::-webkit-outer-spin-button {
 
 input[type=number] {
   -moz-appearance:textfield;
+}
+
+.actionPanel {
+  display: flex;
+  justify-content: center;
+  width: 310px;
+}
+
+.actionButton {
+  width: 100px;
+  height: 30px;
+  margin: 10px 25px;
 }
