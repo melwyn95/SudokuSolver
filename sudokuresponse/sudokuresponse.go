@@ -14,6 +14,7 @@ type sudokuResponse struct {
 
 func SendResponse(w http.ResponseWriter, puzzle string, solved bool) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	json.NewEncoder(w).Encode(sudokuResponse{
 		Puzzle: puzzle,
 		Solved: solved,

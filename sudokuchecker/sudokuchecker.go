@@ -37,15 +37,17 @@ func CheckSolution(solvedPuzzle string) bool {
 }
 
 func ValidateSudoku(solvedPuzzle string) bool {
+	nonEmptyCells := 0
 	grid := SudokuIO.ParsePuzzel(solvedPuzzle)
 	for rowIndex, row := range grid {
 		for colIndex, cell := range row {
 			if cell != 0 {
+				nonEmptyCells++
 				if checkPuzzle(&grid, rowIndex, colIndex, cell) {
 					return false
 				}
 			}
 		}
 	}
-	return true
+	return nonEmptyCells >= 17
 }
