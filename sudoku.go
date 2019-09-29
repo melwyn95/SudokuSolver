@@ -2,28 +2,67 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"log"
+	"net/http"
+	"strconv"
 
-	"./SudokuChecker"
-	"./SudokuSolver"
-	"./Tests"
+	"github.com/gorilla/mux"
+
+	SudokuChecker "./sudokuchecker"
+	SudokuResponse "./sudokuresponse"
+	SudokuSolver "./sudokusolver"
+
+	CacheUtils "./cacheutils"
 )
 
 func main() {
-	Tests.RunTests()
+	router := mux.NewRouter().StrictSlash(true)
+	connection := CacheUtils.GetConnection()
 
-	veryHardPuzzle := "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4.."
-	start := time.Now()
+	router.Path("/solve").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		puzzle := r.URL.Query().Get("puzzle")
+		cacheKeySolve := CacheUtils.GenerateCacheKey(puzzle, "solve")
+		cacheKeyCheck := CacheUtils.GenerateCacheKey(puzzle, "check")
+		cachedSolution, ok := CacheUtils.GetKey(connection, cacheKeySolve)
 
-	solvedPuzzle := SudokuSolver.Solve(veryHardPuzzle, false)
+		if !ok {
+			solvedPuzzle, valid := SudokuSolver.Solve(puzzle, false)
+			if !valid {
+				http.Error(w, fmt.Errorf("Invalid Sudoku").Error(), http.StatusInternalServerError)
+				return
+			}
+			solved := SudokuChecker.CheckSolution(solvedPuzzle)
 
-	end := time.Now()
-	fmt.Println(end.Sub(start))
+			CacheUtils.SetKey(connection, cacheKeySolve, solvedPuzzle)
+			CacheUtils.SetKey(connection, cacheKeyCheck, strconv.FormatBool(solved))
 
-	solved := SudokuChecker.Check(solvedPuzzle)
-	if solved {
-		fmt.Println("!! Solved !!")
-	} else {
-		fmt.Println("XX Wrong Answer XX")
-	}
+			SudokuResponse.SendResponse(w, solvedPuzzle, solved)
+			return
+		}
+
+		cachedCheck, _ := CacheUtils.GetKey(connection, cacheKeyCheck)
+		solved, _ := strconv.ParseBool(cachedCheck)
+		SudokuResponse.SendResponse(w, cachedSolution, solved)
+	})
+
+	router.HandleFunc("/check", func(w http.ResponseWriter, r *http.Request) {
+		puzzle := r.URL.Query().Get("puzzle")
+		cacheKeyCheck := CacheUtils.GenerateCacheKey(puzzle, "check")
+		cachedCheck, ok := CacheUtils.GetKey(connection, cacheKeyCheck)
+		if !ok {
+			solved := SudokuChecker.CheckSolution(puzzle)
+			if solved {
+				CacheUtils.SetKey(connection, cacheKeyCheck, "true")
+				SudokuResponse.SendResponse(w, puzzle, solved)
+				return
+			}
+			CacheUtils.SetKey(connection, cacheKeyCheck, "false")
+			SudokuResponse.SendError(w, "Invalid Sudoku")
+			return
+		}
+		solved, _ := strconv.ParseBool(cachedCheck)
+		SudokuResponse.SendResponse(w, puzzle, solved)
+	})
+
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

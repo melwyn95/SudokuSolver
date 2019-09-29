@@ -1,4 +1,4 @@
-package ArrayUtils
+package arrayutils
 
 func find(array *[9]uint8, predicate func(uint8) bool) (int, uint8) {
 	for index, value := range array {
