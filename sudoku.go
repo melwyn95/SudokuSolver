@@ -20,6 +20,10 @@ func main() {
 	connection := CacheUtils.GetConnection()
 
 	router.Path("/solve").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodOptions {
+			return
+		}
+
 		puzzle := r.URL.Query().Get("puzzle")
 		cacheKeySolve := CacheUtils.GenerateCacheKey(puzzle, "solve")
 		cacheKeyCheck := CacheUtils.GenerateCacheKey(puzzle, "check")
@@ -43,9 +47,13 @@ func main() {
 		cachedCheck, _ := CacheUtils.GetKey(connection, cacheKeyCheck)
 		solved, _ := strconv.ParseBool(cachedCheck)
 		SudokuResponse.SendResponse(w, cachedSolution, solved)
-	})
+	}).Methods(http.MethodGet, http.MethodOptions)
 
 	router.HandleFunc("/check", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodOptions {
+			return
+		}
+
 		puzzle := r.URL.Query().Get("puzzle")
 		cacheKeyCheck := CacheUtils.GenerateCacheKey(puzzle, "check")
 		cachedCheck, ok := CacheUtils.GetKey(connection, cacheKeyCheck)
@@ -62,7 +70,7 @@ func main() {
 		}
 		solved, _ := strconv.ParseBool(cachedCheck)
 		SudokuResponse.SendResponse(w, puzzle, solved)
-	})
+	}).Methods(http.MethodGet, http.MethodOptions)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
