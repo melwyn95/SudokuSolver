@@ -12,9 +12,10 @@ const getInitialBoard = () => Array(9).fill(Array(9).fill(0))
 const Board = () => {
   const [board, setBoard] = useState(getInitialBoard);
   const [error, setError] = useState('');
-  const onChangeFactory = useCallback((rowIndex: number, colIndex: number) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeFactory = useCallback((rowIndex: number, colIndex: number) => {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
       e.preventDefault();
+      setError('');
       const { target: { value } } = e;
       let nValue = Number(value) % 10
       nValue = nValue === 0 ? Number(value) / 10 : nValue;
@@ -30,7 +31,8 @@ const Board = () => {
             return nValue;
           })
         }));
-    }, [board]);
+    }
+  }, [board, error]);
 
   const solveClicked = () => validateSolve(board) ?
     solve(convertBoardToString(board), setError, setBoard) :

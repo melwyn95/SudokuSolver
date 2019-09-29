@@ -57,6 +57,6 @@ export const validateCheck = (board: number[][]) =>
 
 // validate puzzle to have atlease 17 values
 export const validateSolve = (board: number[][]) =>
-  Boolean(board.reduce((rowAcc: number[], row: number[]) =>
+  board.reduce((rowAcc: number[], row: number[]) =>
     row.reduce((colAcc: number[], cell: number) =>
-      cell ? [...colAcc, cell] : colAcc, rowAcc), []).length);
+      cell ? [...colAcc, cell] : colAcc, rowAcc), []).length >= 17;

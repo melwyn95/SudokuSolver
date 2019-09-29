@@ -14,7 +14,7 @@ export const solve = (puzzle: string,
         setError('');
         setBoard(convertStringToBoard(puzzle));
       } else {
-        setError('Error: Unable to solved the puzzle');
+        setError('Wrong Answer');
       }
     })
     .catch(() => setError('Error: Unable to solved the puzzle'));
