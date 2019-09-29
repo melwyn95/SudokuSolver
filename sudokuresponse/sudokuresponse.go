@@ -2,6 +2,7 @@ package sudokuresponse
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -18,4 +19,8 @@ func SendResponse(w http.ResponseWriter, puzzle string, solved bool) {
 		Solved: solved,
 		Status: "success",
 	})
+}
+
+func SendError(w http.ResponseWriter, message string) {
+	http.Error(w, fmt.Errorf(message).Error(), http.StatusInternalServerError)
 }

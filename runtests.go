@@ -2,6 +2,6 @@ package main
 
 import "./tests"
 
-func main() {
+func test() {
 	tests.RunTests()
 }
