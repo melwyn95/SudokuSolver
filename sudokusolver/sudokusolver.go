@@ -1,11 +1,12 @@
-package SudokuSolver
+package sudokusolver
 
 import (
-	"../ArrayUtils"
-	"../SliceUtils"
+	ArrayUtils "../arrayutils"
+	SliceUtils "../sliceutils"
 
-	"../SudokuIO"
-	"../SudokuUtils"
+	SudokuChecker "../sudokuchecker"
+	SudokuIO "../sudokuio"
+	SudokuUtils "../sudokuutils"
 )
 
 func narrowPossibilies(grid *[9][9]uint8, rowIndex int, colIndex int) []uint8 {
@@ -106,8 +107,15 @@ func solve(grid [9][9]uint8, possibilitiesGrid *[9][9][]uint8) ([9][9]uint8, boo
 	return grid, false
 }
 
-func Solve(puzzle string, verbose bool) string {
+func Solve(puzzle string, verbose bool) (string, bool) {
+	if len(puzzle) != 81 {
+		return puzzle, false
+	}
 	grid := SudokuIO.ParsePuzzel(puzzle)
+	if !SudokuChecker.ValidateSudoku(puzzle) {
+		return puzzle, false
+	}
+
 	if verbose {
 		SudokuIO.PrintPuzzle(&grid)
 	}
@@ -117,5 +125,5 @@ func Solve(puzzle string, verbose bool) string {
 	if verbose {
 		SudokuIO.PrintPuzzle(&grid)
 	}
-	return SudokuIO.StringifyPuzzle(&grid)
+	return SudokuIO.StringifyPuzzle(&grid), true
 }
