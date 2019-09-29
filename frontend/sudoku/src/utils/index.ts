@@ -33,7 +33,7 @@ const getBox = (board: number[][], rowIndex: number, colIndex: number) => {
   for (let rowOffset = -1; rowOffset < 2; rowOffset++) {
     for (let colOffset = -1; colOffset < 2; colOffset++) {
       const r = cX + rowOffset, c = cY + colOffset;
-      if (r != rowIndex && c !== colIndex) {
+      if (r !== rowIndex && c !== colIndex) {
         box.push(board[r][c]);
       }
     }

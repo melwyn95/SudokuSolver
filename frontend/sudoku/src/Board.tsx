@@ -3,7 +3,7 @@ import Cell from './Cell';
 
 import { solve } from './api/solve';
 import { check } from './api/check';
-import { convertBoardToString, convertStringToBoard, validateCheck, validateSolve } from './utils';
+import { convertBoardToString, validateCheck, validateSolve } from './utils';
 
 const getInitialBoard = () => Array(9).fill(Array(9).fill(0))
 
@@ -32,7 +32,7 @@ const Board = () => {
           })
         }));
     }
-  }, [board, error]);
+  }, []);
 
   const solveClicked = () => validateSolve(board) ?
     solve(convertBoardToString(board), setError, setBoard) :
