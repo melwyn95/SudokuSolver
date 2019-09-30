@@ -1,1 +1,1 @@
-web: bin/melwyn-sudoku-solver
+web: bin/SudokuSolver
