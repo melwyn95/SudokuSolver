@@ -13,4 +13,6 @@ require (
 	gopkg.in/bluesuncorp/validator.v5 v5.9.1 // indirect
 	github.com/gorilla/mux v1.7.3
 	github.com/go-redis/redis v6.15.5
+	github.com/onsi/ginkgo v1.8.0 // indirect
+	github.com/onsi/gomega v1.5.0 // indirect
 )
