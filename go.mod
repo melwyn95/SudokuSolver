@@ -11,6 +11,6 @@ require (
 	github.com/stretchr/testify v1.3.0 // indirect
 	golang.org/x/net v0.0.0-20150629084131-d9558e5c97f8 // indirect
 	gopkg.in/bluesuncorp/validator.v5 v5.9.1 // indirect
-	github.com/gorilla/mux
-	github.com/go-redis/redis
+	github.com/gorilla/mux v1.7.3
+	github.com/go-redis/redis v6.15.5
 )
