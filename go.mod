@@ -1,4 +1,4 @@
-module github.com/heroku/go-getting-started
+module github.com/melwyn95/SudokuSolver
 
 go 1.12
 
