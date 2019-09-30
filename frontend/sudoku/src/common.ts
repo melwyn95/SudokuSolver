@@ -1,4 +1,4 @@
-export const BASE_API_URL = 'http://ec2-13-233-126-100.ap-south-1.compute.amazonaws.com'
+export const BASE_API_URL = 'https://melwyn-sudoku-solver.herokuapp.com'
 
 export type Response = {
     puzzle: string,

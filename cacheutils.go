@@ -8,7 +8,7 @@ import (
 
 func GetConnection() *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     "ec2-13-233-126-100.ap-south-1.compute.amazonaws.com:6379",
 		Password: "foobared",
 		DB:       0,
 	})
