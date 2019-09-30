@@ -1,22 +1,13 @@
-package sudokusolver
-
-import (
-	ArrayUtils "../arrayutils"
-	SliceUtils "../sliceutils"
-
-	SudokuChecker "../sudokuchecker"
-	SudokuIO "../sudokuio"
-	SudokuUtils "../sudokuutils"
-)
+package main
 
 func narrowPossibilies(grid *[9][9]uint8, rowIndex int, colIndex int) []uint8 {
 	var narrow []uint8
 	if (*grid)[rowIndex][colIndex] > 0 {
 		return narrow
 	}
-	row, col, box := SudokuUtils.GetRow(grid, rowIndex), SudokuUtils.GetCol(grid, colIndex), SudokuUtils.GetBox(grid, rowIndex, colIndex)
-	for _, possibility := range SudokuUtils.GetAllPossibiliesForCell() {
-		if !(ArrayUtils.Exists(&row, possibility) || ArrayUtils.Exists(&col, possibility) || ArrayUtils.Exists(&box, possibility)) {
+	row, col, box := GetRow(grid, rowIndex), GetCol(grid, colIndex), GetBox(grid, rowIndex, colIndex)
+	for _, possibility := range GetAllPossibiliesForCell() {
+		if !(ExistsArray(&row, possibility) || ExistsArray(&col, possibility) || ExistsArray(&box, possibility)) {
 			narrow = append(narrow, possibility)
 		}
 	}
@@ -36,23 +27,23 @@ func generatePossibilitiesForBlankCells(grid *[9][9]uint8) [9][9][]uint8 {
 func eliminatePossiblities(rowIndex int, colIndex int, grid *[9][9]uint8, possibilitiesGrid *[9][9][]uint8) *[9][9][]uint8 {
 	cellValue := (*grid)[rowIndex][colIndex]
 	for index := 0; index < 9; index++ {
-		sliceIndex := SliceUtils.FindIndex((*possibilitiesGrid)[rowIndex][index], cellValue)
+		sliceIndex := FindIndexSlice((*possibilitiesGrid)[rowIndex][index], cellValue)
 		if sliceIndex >= 0 {
-			(*possibilitiesGrid)[rowIndex][index] = SliceUtils.Remove((*possibilitiesGrid)[rowIndex][index], sliceIndex)
+			(*possibilitiesGrid)[rowIndex][index] = RemoveFromSlice((*possibilitiesGrid)[rowIndex][index], sliceIndex)
 		}
 
-		sliceIndex = SliceUtils.FindIndex((*possibilitiesGrid)[index][colIndex], cellValue)
+		sliceIndex = FindIndexSlice((*possibilitiesGrid)[index][colIndex], cellValue)
 		if sliceIndex >= 0 {
-			(*possibilitiesGrid)[index][colIndex] = SliceUtils.Remove((*possibilitiesGrid)[index][colIndex], sliceIndex)
+			(*possibilitiesGrid)[index][colIndex] = RemoveFromSlice((*possibilitiesGrid)[index][colIndex], sliceIndex)
 		}
 	}
-	centerX, centerY := SudokuUtils.GetBoxCenterCoOrdinates(rowIndex, colIndex)
+	centerX, centerY := GetBoxCenterCoOrdinates(rowIndex, colIndex)
 	for rowOffset := -1; rowOffset < 2; rowOffset++ {
 		for colOffset := -1; colOffset < 2; colOffset++ {
 			boxX, boxY := centerX+rowOffset, centerY+colOffset
-			sliceIndex := SliceUtils.FindIndex((*possibilitiesGrid)[boxX][boxY], cellValue)
+			sliceIndex := FindIndexSlice((*possibilitiesGrid)[boxX][boxY], cellValue)
 			if sliceIndex >= 0 {
-				(*possibilitiesGrid)[boxX][boxY] = SliceUtils.Remove((*possibilitiesGrid)[boxX][boxY], sliceIndex)
+				(*possibilitiesGrid)[boxX][boxY] = RemoveFromSlice((*possibilitiesGrid)[boxX][boxY], sliceIndex)
 			}
 		}
 	}
@@ -91,7 +82,7 @@ func copyPossibilitiesGrid(possibilitiesGrid *[9][9][]uint8) *[9][9][]uint8 {
 }
 
 func solve(grid [9][9]uint8, possibilitiesGrid *[9][9][]uint8) ([9][9]uint8, bool) {
-	emptyX, emptyY := SudokuUtils.FindBlankCell(&grid)
+	emptyX, emptyY := FindBlankCell(&grid)
 	if emptyX >= 0 && emptyY >= 0 {
 		for _, possibility := range (*possibilitiesGrid)[emptyX][emptyY] {
 			grid[emptyX][emptyY] = possibility
@@ -111,19 +102,19 @@ func Solve(puzzle string, verbose bool) (string, bool) {
 	if len(puzzle) != 81 {
 		return puzzle, false
 	}
-	grid := SudokuIO.ParsePuzzel(puzzle)
-	if !SudokuChecker.ValidateSudoku(puzzle) {
+	grid := ParsePuzzel(puzzle)
+	if !ValidateSudoku(puzzle) {
 		return puzzle, false
 	}
 
 	if verbose {
-		SudokuIO.PrintPuzzle(&grid)
+		PrintPuzzle(&grid)
 	}
 	possibilitiesGrid := generatePossibilitiesForBlankCells(&grid)
 	grid, possibilitiesGrid = eliminateObviousPossibilitesFromPosssibilitiesGrid(&grid, &possibilitiesGrid)
 	grid, _ = solve(grid, &possibilitiesGrid)
 	if verbose {
-		SudokuIO.PrintPuzzle(&grid)
+		PrintPuzzle(&grid)
 	}
-	return SudokuIO.StringifyPuzzle(&grid), true
+	return StringifyPuzzle(&grid), true
 }

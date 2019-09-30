@@ -1,4 +1,4 @@
-package sudokuutils
+package main
 
 func FindBlankCell(grid *[9][9]uint8) (int, int) {
 	for rowIndex, row := range grid {

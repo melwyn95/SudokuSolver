@@ -1,4 +1,4 @@
-package sudokuresponse
+package main
 
 import (
 	"encoding/json"
