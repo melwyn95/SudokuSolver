@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -16,6 +17,7 @@ import (
 )
 
 func main() {
+	port := os.Getenv("PORT")
 	router := mux.NewRouter().StrictSlash(true)
 	connection := CacheUtils.GetConnection()
 
@@ -72,5 +74,5 @@ func main() {
 		SudokuResponse.SendResponse(w, puzzle, solved)
 	}).Methods(http.MethodGet, http.MethodOptions)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
